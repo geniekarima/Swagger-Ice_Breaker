@@ -1,0 +1,2758 @@
+openapi: 3.0.3
+info:
+  title: Ice Breaker 1.0.1
+  description: |-
+   Ice Breaker is a gaming website. There are included mainly Game User, Subscription, Transaction, Category, Challenges, Game, Emoji, Game Settings etc section.
+   
+    
+    Some useful links:
+    - [The Ice Breaker Store repository](https://github.com/GenieInfoTech/icebreaker-api)
+    - [The source API definition for the Ice Breaker Store](https://github.com/geniekarima/Swagger-Ice_Breaker)
+  contact:
+    email: Contact@genieinfo.tech
+  version: 1.0.11
+servers:
+  - url: https://dev.infoabz.com/api/v1
+tags:
+  - name: Game User
+    description: Operations about game user
+  - name: Subscriptions
+    description: Operations about game user
+  - name: Categories & Challenges
+    description: Operations about game user
+  - name: Game
+    description: Operations about game user
+  - name: Emoji
+    description: Operations about game user
+  - name: Game Settings
+    description: Operations about game user
+
+paths:
+  /game-users:
+    get:
+      tags:
+        - Game User
+      summary: Get a list of game users
+      description: Retrieve a paginated list of game users.
+      operationId: listGameUsers
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: The page number to retrieve
+          required: false
+        - in: query
+          name: per_page
+          schema:
+            type: integer
+          description: Number of users per page
+          required: false
+      responses:
+        '200':
+          description: Game user successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameUserListResponse'
+                
+        '400':
+          description: Bad request. The request or inputs are not as expected.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized. Authentication credentials were missing or incorrect.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '403':
+          description: Forbidden. The user is authenticated but does not have permissions to perform the requested operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        '422':
+          description: Unprocessable Entity. The request was well-formed but unable to be followed due to semantic errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessableEntityError'
+        '500':
+          description: Internal Server Error. A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /game-users/login:
+    post:
+      summary: Create a game user with a subscription.
+      operationId: createUser
+      tags:
+        - Game User
+      requestBody:
+        description: Data needed to create a new game user.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreationRequest'
+      responses:
+        '200':
+          description: Game user successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCreationResponse'
+                
+        '400':
+          description: Bad request. The request or inputs are not as expected.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized. Authentication credentials were missing or incorrect.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '403':
+          description: Forbidden. The user is authenticated but does not have permissions to perform the requested operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        '422':
+          description: Unprocessable Entity. The request was well-formed but unable to be followed due to semantic errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessableEntityError'
+        '500':
+          description: Internal Server Error. A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+      
+  /game-users/logout:
+    post:
+      tags:
+        - Game User
+      summary: Logs out the game user
+      description: Logs the user out of the system.
+      operationId: logoutUser
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User successfully logged out
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/LogoutResponse'
+
+        '401':
+          description: Unauthorized - Invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                code: 401
+                message: Unauthorized - Invalid token
+                type: null
+        '403':
+          description: Forbidden - Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                code: 403
+                message: Forbidden - Insufficient permissions
+                type: null
+        '404':
+          description: Not Found - Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                code: 404
+                message: User not logged in
+                type: null
+        '500':
+          description: Internal Server Error - Server-side issue
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                success: false
+                code: 500
+                message: Internal Server Error
+                type: null
+                
+  /subscriptions:
+    post:
+      tags:
+        - Subscriptions
+      summary: Create a new subscription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionCreationRequest'
+      responses:
+        '200':
+          description: Subscription successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionCreationResponse'
+              example:
+                success: true
+                data:
+                  id: 18
+                  name: "30 days active"
+                  duration: 30
+                  unit: months
+                  price: 100
+                  benefits: "List of benefits or features"
+                  image: "NUll"
+                  updated_at: "2024-04-15T13:34:29.000000Z"
+                  created_at: "2024-04-15T13:34:29.000000Z"
+                message: Subscription successfully created
+                code: 200
+                
+        '400':
+          description: Bad request. The request or inputs are not as expected.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized. Authentication credentials were missing or incorrect.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '403':
+          description: Forbidden. The user is authenticated but does not have permissions to perform the requested operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        '422':
+          description: Unprocessable Entity. The request was well-formed but unable to be followed due to semantic errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessableEntityError'
+        '500':
+          description: Internal Server Error. A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+                
+    get:
+      tags:
+        - Subscriptions
+      summary: Retrieve subscription list
+      description: Returns a list of available subscriptions.
+      operationId: getSubscriptionList
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionCreationRequest'
+              example:
+                success: true
+                data:
+                  id: 18
+                  name: "30 days active"
+                  duration: 30
+                  unit: months
+                  price: 100
+                  benefits: "List of benefits or features"
+                  image: "NUll"
+                  updated_at: "2024-04-15T13:34:29.000000Z"
+                  created_at: "2024-04-15T13:34:29.000000Z"
+                message: Success
+                code: 200
+        '400':
+          description: Bad request. The request or inputs are not as expected.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized. Authentication credentials were missing or incorrect.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '403':
+          description: Forbidden. The user is authenticated but does not have permissions to perform the requested operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        '422':
+          description: Unprocessable Entity. The request was well-formed but unable to be followed due to semantic errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessableEntityError'
+        '500':
+          description: Internal Server Error. A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+                
+  /subscriptions/{subscription_id}:
+    put:
+      tags:
+        - Subscriptions
+      summary: Update a subscription
+      description: Update an existing subscription by ID
+      operationId: updateSubscription
+      parameters:
+        - name: subscription_id
+          in: path
+          description: ID of the subscription to update
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionCreationRequest'
+      responses:
+        '200':
+          description: Subscription updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubscriptionCreationResponse'
+              example:
+                success: true
+                data:
+                  id: 18
+                  name: "30 days active"
+                  duration: 30
+                  unit: months
+                  price: 100
+                  benefits: "List of benefits or features"
+                  image: "NUll"
+                  updated_at: "2024-04-15T13:34:29.000000Z"
+                  created_at: "2024-04-15T13:34:29.000000Z"
+                message: Subscription updated successfully
+        '400':
+          description: Bad request. The request or inputs are not as expected.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized. Authentication credentials were missing or incorrect.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '403':
+          description: Forbidden. The user is authenticated but does not have permissions to perform the requested operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        '422':
+          description: Unprocessable Entity. The request was well-formed but unable to be followed due to semantic errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessableEntityError'
+        '500':
+          description: Internal Server Error. A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+                
+  /game-users/purchase-transaction:
+    post:
+      tags:
+        - Game User
+      summary: New transaction purchase
+      description: Description of the endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionRequestSchema'
+      responses:
+        '200':
+          description: Transaction successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+              example:
+                success: true
+                data:
+                  subscription_id: "4"
+                  auto_renewal: false
+                  start_date: "2024-04-15T15:55:00.492762Z"
+                  end_date: "2024-05-15T15:55:00.492788Z"
+                  price: 100
+                  game_user_id: 126
+                  updated_at: "2024-04-15T15:55:00.000000Z"
+                  created_at: "2024-04-15T15:55:00.000000Z"
+                  id: 19
+                message: Transaction successfully created
+                code: 200
+        '400':
+          description: Bad request. The request or inputs are not as expected.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized. Authentication credentials were missing or incorrect.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '403':
+          description: Forbidden. The user is authenticated but does not have permissions to perform the requested operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        '422':
+          description: Unprocessable Entity. The request was well-formed but unable to be followed due to semantic errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessableEntityError'
+        '500':
+          description: Internal Server Error. A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+                
+  /categories:
+    post:
+      tags:
+        - Categories & Challenges
+      summary: Create a new category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryCreationRequest'
+      responses:
+        '200':
+          description: Category successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryCreationResponse'
+        '400':
+          description: Bad request. The request or inputs are not as expected.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized. Authentication credentials were missing or incorrect.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '403':
+          description: Forbidden. The user is authenticated but does not have permissions to perform the requested operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        '422':
+          description: Unprocessable Entity. The request was well-formed but unable to be followed due to semantic errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessableEntityError'
+        '500':
+          description: Internal Server Error. A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+                
+    get:
+      tags:
+        - Categories & Challenges
+      summary: Retrieve category list
+      description: Returns a list of categories.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryListResponse'
+        '400':
+          description: Bad request. The request or inputs are not as expected.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized. Authentication credentials were missing or incorrect.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '403':
+          description: Forbidden. The user is authenticated but does not have permissions to perform the requested operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        '422':
+          description: Unprocessable Entity. The request was well-formed but unable to be followed due to semantic errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessableEntityError'
+        '500':
+          description: Internal Server Error. A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+                
+  /categories/{id}:
+    put:
+      tags:
+        - Categories & Challenges
+      summary: Update a category
+      description: Update an existing category by ID.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID of the category to update
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryUpdateRequest'
+      responses:
+        '200':
+          description: Category successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryUpdateResponse'
+        '400':
+          description: Bad request. The request or inputs are not as expected.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized. Authentication credentials were missing or incorrect.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '403':
+          description: Forbidden. The user is authenticated but does not have permissions to perform the requested operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        '422':
+          description: Unprocessable Entity. The request was well-formed but unable to be followed due to semantic errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessableEntityError'
+        '500':
+          description: Internal Server Error. A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+                
+  /categories/{category_id}/challenges:
+    post:
+      tags:
+        - Categories & Challenges
+      summary: Create a new challenge
+      parameters:
+        - in: path
+          name: category_id
+          required: true
+          description: ID of the category to which the challenge belongs
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChallengeCreateRequest'
+      responses:
+        '200':
+          description: Challenge successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChallengeCreateResponse'
+        '400':
+          description: Bad request. The request or inputs are not as expected.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized. Authentication credentials were missing or incorrect.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '403':
+          description: Forbidden. The user is authenticated but does not have permissions to perform the requested operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        '422':
+          description: Unprocessable Entity. The request was well-formed but unable to be followed due to semantic errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessableEntityError'
+        '500':
+          description: Internal Server Error. A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+    get:
+      tags:
+        - Categories & Challenges
+      summary: Retrieve challenges for a category
+      description: Returns a list of challenges belonging to the specified category.
+      parameters:
+        - in: path
+          name: category_id
+          required: true
+          description: ID of the category
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChallengeListResponse'
+        '400':
+          description: Bad request. The request or inputs are not as expected.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized. Authentication credentials were missing or incorrect.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '403':
+          description: Forbidden. The user is authenticated but does not have permissions to perform the requested operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        '422':
+          description: Unprocessable Entity. The request was well-formed but unable to be followed due to semantic errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessableEntityError'
+        '500':
+          description: Internal Server Error. A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+          
+  /categories/{category_id}/challenges/{id}:
+    put:
+      tags:
+        - Categories & Challenges
+      summary: Update a challenge
+      description: Update an existing challenge within the specified category.
+      parameters:
+        - in: path
+          name: category_id
+          required: true
+          description: ID of the category to which the challenge belongs
+          schema:
+            type: integer
+            format: int64
+        - in: path
+          name: id
+          required: true
+          description: ID of the challenge to update
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChallengeUpdateRequest'
+      responses:
+        '200':
+          description: Challenge successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChallengeUpdateResponse'
+        '400':
+          description: Bad request. The request or inputs are not as expected.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized. Authentication credentials were missing or incorrect.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '403':
+          description: Forbidden. The user is authenticated but does not have permissions to perform the requested operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        '422':
+          description: Unprocessable Entity. The request was well-formed but unable to be followed due to semantic errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessableEntityError'
+        '500':
+          description: Internal Server Error. A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+                
+    delete:
+      tags:
+        - Categories & Challenges
+      summary: Delete a challenge
+      description: Delete an existing challenge within the specified category.
+      parameters:
+        - in: path
+          name: category_id
+          required: true
+          description: ID of the category to which the challenge belongs
+          schema:
+            type: integer
+            format: int64
+        - in: path
+          name: id
+          required: true
+          description: ID of the challenge to delete
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Challenge category successfully deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChallengeCategoryDeleteResponse'
+        '400':
+          description: Bad request. The request or inputs are not as expected.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized. Authentication credentials were missing or incorrect.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '403':
+          description: Forbidden. The user is authenticated but does not have permissions to perform the requested operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        '422':
+          description: Unprocessable Entity. The request was well-formed but unable to be followed due to semantic errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessableEntityError'
+        '500':
+          description: Internal Server Error. A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+                
+  /games:
+    post:
+      tags:
+        - Game
+      summary: Create a new game
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GameCreateRequest'
+      responses:
+        '200':
+          description: Game successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameCreateResponse'
+        '400':
+          description: Bad request. The request or inputs are not as expected.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized. Authentication credentials were missing or incorrect.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '403':
+          description: Forbidden. The user is authenticated but does not have permissions to perform the requested operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        '422':
+          description: Unprocessable Entity. The request was well-formed but unable to be followed due to semantic errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessableEntityError'
+        '500':
+          description: Internal Server Error. A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+                
+    put:
+      tags:
+        - Game
+      summary: Join a game
+      description: Join an existing game as a player.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JoinGameRequest'
+      responses:
+        '200':
+          description: Player successfully joined the game
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JoinGameResponse'
+        '400':
+          description: Bad request. The request or inputs are not as expected.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized. Authentication credentials were missing or incorrect.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '403':
+          description: Forbidden. The user is authenticated but does not have permissions to perform the requested operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        '422':
+          description: Unprocessable Entity. The request was well-formed but unable to be followed due to semantic errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessableEntityError'
+        '500':
+          description: Internal Server Error. A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+                
+  /games/{game_id}/players:
+    get:
+      tags:
+        - Game
+      summary: Get list of joined players
+      description: Retrieve the list of players who have joined the game.
+      parameters:
+        - in: path
+          name: game_id
+          required: true
+          description: ID of the game
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: List of joined players retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JoinedPlayersResponse'
+                  
+        '400':
+          description: Bad request. The request or inputs are not as expected.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized. Authentication credentials were missing or incorrect.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '403':
+          description: Forbidden. The user is authenticated but does not have permissions to perform the requested operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        '422':
+          description: Unprocessable Entity. The request was well-formed but unable to be followed due to semantic errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessableEntityError'
+        '500':
+          description: Internal Server Error. A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+                
+  /games/{game_id}:
+    get:
+      tags:
+        - Game
+      summary: Get game details
+      description: Retrieve detailed information about a specific game.
+      parameters:
+        - in: path
+          name: game_id
+          required: true
+          description: ID of the game
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Game all info retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameDetailsResponse'
+        '400':
+          description: Bad request. The request or inputs are not as expected.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized. Authentication credentials were missing or incorrect.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '403':
+          description: Forbidden. The user is authenticated but does not have permissions to perform the requested operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        '422':
+          description: Unprocessable Entity. The request was well-formed but unable to be followed due to semantic errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessableEntityError'
+        '500':
+          description: Internal Server Error. A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  
+    delete:
+      tags:
+        - Game
+      summary: Terminate a game
+      description: Terminate the game with the specified game ID.
+      parameters:
+        - in: path
+          name: game_id
+          required: true
+          description: ID of the game to be terminated
+          schema:
+            type: integer
+            format: int64
+        - in: query
+          name: user_id
+          required: true
+          description: ID of the user requesting game termination
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Game terminated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameTerminationResponse'
+        '400':
+          description: Bad request. The request or inputs are not as expected.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized. Authentication credentials were missing or incorrect.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '403':
+          description: Forbidden. The user is authenticated but does not have permissions to perform the requested operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        '422':
+          description: Unprocessable Entity. The request was well-formed but unable to be followed due to semantic errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessableEntityError'
+        '500':
+          description: Internal Server Error. A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+                
+  /games/active:
+    get:
+      tags:
+        - Game
+      summary: Get active game for the user
+      description: Retrieve the active game for the specified user.
+      parameters:
+        - in: query
+          name: user_id
+          required: true
+          description: ID of the user
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Active game found for the user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActiveGameResponse'
+        '400':
+          description: Bad request. The request or inputs are not as expected.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized. Authentication credentials were missing or incorrect.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '403':
+          description: Forbidden. The user is authenticated but does not have permissions to perform the requested operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        '422':
+          description: Unprocessable Entity. The request was well-formed but unable to be followed due to semantic errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessableEntityError'
+        '500':
+          description: Internal Server Error. A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+                
+  /games/{game_id}/players/{player_id}:
+    put:
+      tags:
+        - Game
+      summary: Rejoin the game
+      description: Rejoin the game for the specified player.
+      parameters:
+        - in: path
+          name: game_id
+          required: true
+          description: ID of the game
+          schema:
+            type: integer
+            format: int64
+        - in: path
+          name: player_id
+          required: true
+          description: ID of the player
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Player rejoined the game successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RejoinGameResponse'
+        '400':
+          description: Bad request. The request or inputs are not as expected.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized. Authentication credentials were missing or incorrect.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '403':
+          description: Forbidden. The user is authenticated but does not have permissions to perform the requested operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        '422':
+          description: Unprocessable Entity. The request was well-formed but unable to be followed due to semantic errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessableEntityError'
+        '500':
+          description: Internal Server Error. A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+ 
+    delete:
+      tags:
+        - Game
+      summary: Remove or Left player from the game
+      description: Remove or delete the player from the game for the specified game and player IDs.
+      parameters:
+        - in: path
+          name: game_id
+          required: true
+          description: ID of the game
+          schema:
+            type: integer
+            format: int64
+        - in: path
+          name: player_id
+          required: true
+          description: ID of the player
+          schema:
+            type: integer
+            format: int64
+        - in: query
+          name: user_id
+          required: true
+          description: ID of the user initiating the deletion
+          schema:
+            type: integer
+            format: int64
+        - in: query
+          name: status
+          required: true
+          description: Status indicating whether the player is left or removed
+          schema:
+            type: string
+            enum: [left, removed]
+      responses:
+        '200':
+          description: Player successfully removed from the game
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemovePlayerResponse'
+        '400':
+          description: Bad request. The request or inputs are not as expected.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized. Authentication credentials were missing or incorrect.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '403':
+          description: Forbidden. The user is authenticated but does not have permissions to perform the requested operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        '422':
+          description: Unprocessable Entity. The request was well-formed but unable to be followed due to semantic errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessableEntityError'
+        '500':
+          description: Internal Server Error. A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+                
+  /emojis:
+    post:
+      tags:
+        - Emoji
+      summary: Create a new emoji
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name of the emoji
+                image:
+                  type: string
+                  description: URL of the emoji image
+      responses:
+        '200':
+          description: Emoji successfully created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        example: cardio
+                      image:
+                        type: string
+                        nullable: true
+                      updated_at:
+                        type: string
+                        format: date-time
+                        example: "2024-04-17T10:24:48.000000Z"
+                      created_at:
+                        type: string
+                        format: date-time
+                        example: "2024-04-17T10:24:48.000000Z"
+                      id:
+                        type: integer
+                        format: int64
+                        example: 6
+                  message:
+                    type: string
+                    example: Emoji successfully created
+                  code:
+                    type: integer
+                    example: 200
+        '400':
+          description: Bad request. The request or inputs are not as expected.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized. Authentication credentials were missing or incorrect.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '403':
+          description: Forbidden. The user is authenticated but does not have permissions to perform the requested operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        '422':
+          description: Unprocessable Entity. The request was well-formed but unable to be followed due to semantic errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessableEntityError'
+        '500':
+          description: Internal Server Error. A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+                
+    get:
+      tags:
+        - Emoji
+      summary: Retrieve a list of emojis
+      responses:
+        '200':
+          description: List of emojis successfully retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      description: Name of the emoji
+                    image:
+                      type: string
+                      description: URL of the emoji image
+                    updated_at:
+                      type: string
+                      format: date-time
+                      example: "2024-04-17T10:24:48.000000Z"
+                    created_at:
+                      type: string
+                      format: date-time
+                      example: "2024-04-17T10:24:48.000000Z"
+                    id:
+                      type: integer
+                      format: int64
+                      example: 6
+        '400':
+          description: Bad request. The request or inputs are not as expected.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized. Authentication credentials were missing or incorrect.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '403':
+          description: Forbidden. The user is authenticated but does not have permissions to perform the requested operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        '422':
+          description: Unprocessable Entity. The request was well-formed but unable to be followed due to semantic errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessableEntityError'
+        '500':
+          description: Internal Server Error. A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+                
+  /game-settings:
+    get:
+      tags:
+        - Game Settings
+      summary: Retrieve game settings
+      responses:
+        '200':
+          description: Game settings data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 6
+                      settingable_id:
+                        type: integer
+                        nullable: true
+                        example: null
+                      settingable_type:
+                        type: string
+                        nullable: true
+                        example: null
+                      key:
+                        type: string
+                        example: game_settings
+                      value:
+                        type: object
+                        properties:
+                          room_settings:
+                            type: object
+                            properties:
+                              room_limit:
+                                type: integer
+                                example: 10
+                              turn_duration:
+                                type: integer
+                                example: 10
+                              warning_starts_at:
+                                type: integer
+                                example: 10
+                          terms_and_conditions:
+                            type: string
+                            example: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis id accumsan nunc. Curabitur nec mi quis quam interdum fringilla. Nulla volutpat tortor at fermentum consequat. Duis ex ex, aliquam eget urna id, porta maximus arcu. Mauris dignissim leo in nisi accumsan blandit. Integer suscipit, elit nec ornare tempus, urna odio porttitor dui, a scelerisque augue ex eu lectus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Proin nibh elit, congue sed fringilla at, interdum nec tortor. Aliquam turpis velit, semper id euismod a, dignissim vel dolor."
+                      created_at:
+                        type: string
+                        format: date-time
+                        example: "2024-03-26T07:01:06.000000Z"
+                      updated_at:
+                        type: string
+                        format: date-time
+                        example: "2024-03-26T07:01:06.000000Z"
+                  message:
+                    type: string
+                    example: Game settings data retrieved successfully
+                  code:
+                    type: integer
+                    example: 200
+        '400':
+          description: Bad request. The request or inputs are not as expected.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'
+        '401':
+          description: Unauthorized. Authentication credentials were missing or incorrect.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '403':
+          description: Forbidden. The user is authenticated but does not have permissions to perform the requested operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenError'
+        '422':
+          description: Unprocessable Entity. The request was well-formed but unable to be followed due to semantic errors.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnprocessableEntityError'
+        '500':
+          description: Internal Server Error. A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+                
+                
+components:
+  schemas: 
+    CategoryCreationRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Physical"
+        is_active:
+          type: boolean
+          example: true
+          
+    CategoryCreationResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            name:
+              type: string
+              example: Physical
+            is_active:
+              type: boolean
+              example: true
+            updated_at:
+              type: string
+              format: date-time
+              example: "2024-04-16T03:44:28.000000Z"
+            created_at:
+              type: string
+              format: date-time
+              example: "2024-04-16T03:44:28.000000Z"
+            id:
+              type: integer
+              format: int64
+              example: 11
+        message:
+          type: string
+          example: Category successfully created
+        code:
+          type: integer
+          example: 200
+          
+    CategoryListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+        message:
+          type: string
+          example: Category list successfully retrieved
+        code:
+          type: integer
+          example: 200
+          
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: Physical
+        is_active:
+          type: boolean
+          example: true
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-04-16T03:44:28.000000Z"
+        created_at:
+          type: string
+          format: date-time
+          
+    CategoryUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        is_active:
+          type: boolean
+          
+    CategoryUpdateResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+            name:
+              type: string
+            is_active:
+              type: boolean
+            updated_at:
+              type: string
+              format: date-time
+        message:
+          type: string
+          example: Category successfully updated
+        code:
+          type: integer
+          example: 200
+          
+    ChallengeCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        icon_name:
+          type: string
+
+    ChallengeCreateResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+            name:
+              type: string
+            icon_name:
+              type: string
+            updated_at:
+              type: string
+              format: date-time
+            created_at:
+              type: string
+              format: date-time
+        message:
+          type: string
+          example: Challenge successfully created
+        code:
+          type: integer
+          example: 200
+          
+    ChallengeListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Challenge'
+        message:
+          type: string
+          example: Challenges retrieved successfully
+        code:
+          type: integer
+          example: 200
+
+    Challenge:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: Challenge 1
+        icon_name:
+          type: string
+          example: test-icon-image
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-04-17T09:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-04-17T09:00:00Z"
+          
+    ChallengeUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        icon_name:
+          type: string
+
+    ChallengeUpdateResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          $ref: '#/components/schemas/Challenge'
+        message:
+          type: string
+          example: Challenge successfully updated
+        code:
+          type: integer
+          example: 200
+          
+    ChallengeCategoryDeleteResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: array
+          items: {}
+        message:
+          type: string
+          example: Challenge category successfully deleted
+        code:
+          type: integer
+          example: 200
+  
+    TransactionRequestSchema:
+      type: object
+      properties:
+        subscription_id:
+          type: string
+          example: "4"
+        auto_renewal:
+          type: boolean
+          example: false
+
+    TransactionResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/TransactionData'
+        message:
+          type: string
+        code:
+          type: integer
+
+    TransactionData:
+      type: object
+      properties:
+        subscription_id:
+          type: string
+        auto_renewal:
+          type: boolean
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+        price:
+          type: integer
+        game_user_id:
+          type: integer
+        updated_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        id:
+          type: integer
+          
+    UserCreationRequest:
+      type: object
+      required:
+        - access_token
+        - provider
+        - email
+      properties:
+        access_token:
+          type: string
+          description: OAuth2 token provided by the external authentication provider.
+          example: "ya29.a0Ad52N3-S9RK1uydW6X9N1t3T9kWZRzYP48YyCg5s4VMjBeE7V02w-tUyeGxSGpWnoR69x9xqeF9nGBcMooGkl3JbexvEzyGzrZkarNHioFx3zdOfNgG3bnlas42EikuH6KNRqJ64HKaRcJfwaRIQbTqoH9O_dFRiW1caCgYKASASARISFQHGX2MinvO_Zia7hr5Od9XHUnKPdA0170"
+        provider:
+          type: string
+          description: Identifier for the OAuth provider, e.g., 'google'.
+          example: "google"
+
+
+    UserCreationResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            access_token:
+              type: string
+              example: "eyJ0eXAiOiJKV1Qi..."
+            user:
+              $ref: '#/components/schemas/UserDetails'
+        message:
+          type: string
+          example: "Game user successfully created"
+        code:
+          type: integer
+          example: 200
+
+    UserDetails:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 126
+        name:
+          type: string
+          example: Darkeous Zeus
+        email:
+          type: string
+          example: darkeouszeus@gmail.com
+        image:
+          type: string
+          example: https://lh3.googleusercontent.com/a/ACg8ocKUxro58ssWhHzlqM8LH64fgHlPjLtZ035Yixq418fTxA=s96-c
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-03-28T14:00:11.000000Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-03-28T14:00:11.000000Z"
+        transaction:
+          $ref: '#/components/schemas/TransactionDetails'
+          
+    GameCreateRequest:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          example: 2
+        name:
+          type: string
+          example: Moon
+        image:
+          type: string
+        category_id:
+          type: integer
+          example: 5
+        challenge_ids:
+          type: array
+          items:
+            type: string
+          example: ["9", "7"]
+
+    GameCreateResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          $ref: '#/components/schemas/Game'
+        message:
+          type: string
+          example: Game successfully created
+        code:
+          type: integer
+          example: 200
+
+    Game:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 137
+        host_id:
+          type: integer
+          example: 2
+        game_pin:
+          type: string
+          example: B5V7R3E
+        status:
+          type: string
+          example: created
+        is_terminated:
+          type: integer
+          example: 0
+        deleted_at:
+          type: string
+          nullable: true
+          example: null
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-04-16T13:44:22.000000Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-04-16T13:44:22.000000Z"
+        host:
+          $ref: '#/components/schemas/User'
+        category:
+          $ref: '#/components/schemas/CategoryList'
+          
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 2
+        name:
+          type: string
+          example: genie.appteam@gmail.com
+        email:
+          type: string
+          example: genie.appteam@gmail.com
+        image:
+          type: string
+          nullable: true
+          example: null
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-02-12T09:02:17.000000Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-02-12T09:02:17.000000Z"
+          
+    JoinGameRequest:
+      type: object
+      properties:
+        user_id:
+          type: integer
+        name:
+          type: string
+        image:
+          type: string
+        game_pin:
+          type: string
+
+    JoinGameResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Player'
+        message:
+          type: string
+          example: Player successfully joined the game
+        code:
+          type: integer
+          example: 200
+
+    Player:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 262
+        game_id:
+          type: integer
+          example: 137
+        player_id:
+          type: integer
+          example: 2
+        status:
+          type: string
+          example: joined
+        is_host:
+          type: integer
+          example: 1
+        deleted_at:
+          type: string
+          nullable: true
+          example: null
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-04-16T13:44:22.000000Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-04-16T13:44:22.000000Z"
+          
+    JoinedPlayersResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/JoinedPlayer'
+        message:
+          type: string
+          example: List of joined players retrieved successfully
+        code:
+          type: integer
+          example: 200
+
+    JoinedPlayer:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 262
+        game_id:
+          type: integer
+          example: 137
+        player_id:
+          type: integer
+          example: 2
+        status:
+          type: string
+          example: joined
+        is_host:
+          type: integer
+          example: 1
+        deleted_at:
+          type: string
+          nullable: true
+          example: null
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-04-16T13:44:22.000000Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-04-16T13:44:22.000000Z"
+        player:
+          $ref: '#/components/schemas/User'
+          
+    GameDetailsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          $ref: '#/components/schemas/GameDetails'
+        message:
+          type: string
+          example: Game all info retrieved successfully
+        code:
+          type: integer
+          example: 200
+          
+    GameDetails:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 137
+        host_id:
+          type: integer
+          example: 2
+        game_pin:
+          type: string
+          example: B5V7R3E
+        status:
+          type: string
+          example: created
+        is_terminated:
+          type: integer
+          example: 0
+        deleted_at:
+          type: string
+          nullable: true
+          example: null
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-04-16T13:44:22.000000Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-04-16T13:44:22.000000Z"
+        host:
+          $ref: '#/components/schemas/User'
+        join_players:
+          type: array
+          items:
+            $ref: '#/components/schemas/JoinPlayer'
+        category:
+          $ref: '#/components/schemas/CategoryList'
+          
+    JoinPlayer:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 262
+        game_id:
+          type: integer
+          example: 137
+        player_id:
+          type: integer
+          example: 2
+        status:
+          type: string
+          example: joined
+        is_host:
+          type: integer
+          example: 1
+        deleted_at:
+          type: string
+          nullable: true
+          example: null
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-04-16T13:44:22.000000Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-04-16T13:44:22.000000Z"
+    CategoryList:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 5
+        name:
+          type: string
+          example: Physical
+        challenges:
+          type: array
+          items:
+            $ref: '#/components/schemas/Challenge'
+            
+    ActiveGameResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            has_active_game:
+              type: boolean
+              example: true
+            active_game:
+              $ref: '#/components/schemas/ActiveGame'
+        message:
+          type: string
+          example: Active game found for the user.
+        code:
+          type: integer
+          example: 200
+          
+    ActiveGame:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 127
+        host_id:
+          type: integer
+          example: 113
+        game_pin:
+          type: string
+          example: L6DUK94
+        status:
+          type: string
+          example: created
+        is_terminated:
+          type: integer
+          example: 0
+        deleted_at:
+          type: string
+          nullable: true
+          example: null
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-03-19T05:32:32.000000Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-03-20T13:48:29.000000Z"
+          
+    RejoinGameResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Player'
+        message:
+          type: string
+          example: Player rejoined the game successfully
+        code:
+          type: integer
+
+    RemovePlayerResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          $ref: '#/components/schemas/PlayerLeaveInfo'
+        message:
+          type: string
+          example: Player successfully removed from the game
+        code:
+          type: integer
+          example: 200
+
+    PlayerLeaveInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 262
+        game_id:
+          type: integer
+          example: 137
+        player_id:
+          type: integer
+          example: 2
+        status:
+          type: string
+          enum: [left, removed]
+          example: removed
+        is_host:
+          type: integer
+          example: 1
+        deleted_at:
+          type: string
+          nullable: true
+          example: null
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-04-16T13:44:22.000000Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-04-16T19:56:09.000000Z"
+          
+    GameTerminationResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          $ref: '#/components/schemas/GameInfo'
+        message:
+          type: string
+          example: Game terminated successfully
+        code:
+          type: integer
+          example: 200
+
+    GameInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 138
+        host_id:
+          type: integer
+          example: 2
+        game_pin:
+          type: string
+          example: "Q970A8S"
+        status:
+          type: string
+          example: "created"
+        is_terminated:
+          type: integer
+          example: 1
+        deleted_at:
+          type: string
+          nullable: true
+          example: null
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-04-16T20:31:59.000000Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-04-16T20:32:10.000000Z"
+
+
+
+    TransactionDetails:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 17
+        game_user_id:
+          type: integer
+          example: 126
+        subscription_id:
+          type: integer
+          example: 4
+        price:
+          type: integer
+          example: 100
+        start_date:
+          type: string
+          format: date-time
+          example: "2024-04-01 06:03:19"
+        end_date:
+          type: string
+          format: date-time
+          example: "2024-05-01 06:03:19"
+        auto_renewal:
+          type: boolean
+          example: false
+        subscription:
+          $ref: '#/components/schemas/SubscriptionDetails'
+
+    SubscriptionDetails:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 4
+        name:
+          type: string
+          example: 30 days active
+        duration:
+          type: integer
+          example: 30
+        unit:
+          type: string
+          example: days
+        price:
+          type: integer
+          example: 100
+        benefits:
+          type: string
+          example: List of benefits or features
+        image:
+          type: string
+          example: NUll
+
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Error message describing what went wrong."
+        code:
+          type: integer
+          example: 400
+          
+          
+    BadRequestError:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Indicates whether the request was successful.
+          example: false
+        code:
+          type: integer
+          description: The HTTP status code indicating the result of the request.
+          example: 400
+        message:
+          type: string
+          description: A message describing the result of the request.
+          example: "Bad Request - Invalid input or validation error."
+        data:
+          type: object
+          description: Additional data associated with the error, if applicable.
+        type:
+          type: string
+          description: Reserved field (null).
+
+    UnauthorizedError:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Indicates whether the request was successful.
+          example: false
+        code:
+          type: integer
+          description: The HTTP status code indicating the result of the request.
+          example: 401
+        message:
+          type: string
+          description: A message describing the result of the request.
+          example: "Authentication credentials were not provided."
+        data:
+          type: object
+          description: Additional data associated with the error, if applicable.
+        type:
+          type: string
+          description: Reserved field (null).
+
+    ForbiddenError:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Indicates whether the request was successful.
+          example: false
+        code:
+          type: integer
+          description: The HTTP status code indicating the result of the request.
+          example: 403
+        message:
+          type: string
+          description: A message describing the result of the request.
+          example: "You do not have permission to perform this action."
+        data:
+          type: object
+          description: Additional data associated with the error, if applicable.
+        type:
+          type: string
+          description: Reserved field (null).
+
+    UnprocessableEntityError:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            type: string
+      example:
+        code: 422
+        message: "Your request parameters did not validate."
+        
+
+    InternalServerError:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+      example:
+        code: 500
+        message: "An unexpected error occurred. Please try again later."
+
+    LogoutResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Indicates whether the logout was successful.
+          example: true
+        code:
+          type: integer
+          description: HTTP status code indicating the result.
+          example: 200
+        message:
+          type: string
+          description: A message indicating the result of the logout.
+          example: "User successfully logged out"
+        data:
+          type: array
+          description: An empty array indicating no additional data.
+          items: {}
+        type:
+          type: string
+          
+    GameUserListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            users:
+              type: array
+              items:
+                $ref: '#/components/schemas/GameUser'
+            total_users:
+              type: integer
+      example:
+        success: true
+        data:
+          users:
+            - id: 126
+              name: Darkeous Zeus
+              email: darkeouszeus@gmail.com
+              image: https://lh3.googleusercontent.com/a/ACg8ocKUxro58ssWhHzlqM8LH64fgHlPjLtZ035Yixq418fTxA=s96-c
+              created_at: "2024-03-28T14:00:11.000000Z"
+              updated_at: "2024-03-28T14:00:11.000000Z"
+              transaction:
+                id: 17
+                game_user_id: 126
+                subscription_id: 4
+                price: 100
+                start_date: "2024-04-01 06:03:19"
+                end_date: "2024-05-01 06:03:19"
+                auto_renewal: 0
+                deleted_at: null
+                created_at: "2024-04-01T06:03:19.000000Z"
+                updated_at: "2024-04-01T06:03:19.000000Z"
+                subscription:
+                  id: 4
+                  name: 30 days active
+                  duration: 30
+                  unit: days
+                  price: 100
+                  benefits: List of benefits or features
+                  image: NUll
+                  deleted_at: null
+                  created_at: "2024-03-24T09:30:56.000000Z"
+                  updated_at: "2024-03-24T09:30:56.000000Z"
+          total_users: 10
+          
+    GameUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The user's unique ID.
+        name:
+          type: string
+          description: The user's name.
+        email:
+          type: string
+          description: The user's email address.
+        image:
+          type: string
+          description: The URL of the user's image.
+        created_at:
+          type: string
+          format: date-time
+          description: The datetime when the user was created.
+        updated_at:
+          type: string
+          format: date-time
+          description: The datetime when the user was last updated.
+        transaction:
+          type: object
+          description: The transaction details associated with the user.
+          properties:
+            id:
+              type: integer
+              description: The transaction ID.
+            game_user_id:
+              type: integer
+              description: The user ID associated with the transaction.
+            subscription_id:
+              type: integer
+              description: The ID of the subscription associated with the transaction.
+            price:
+              type: integer
+              description: The price of the subscription.
+            start_date:
+              type: string
+              format: date-time
+              description: The start date of the subscription.
+            end_date:
+              type: string
+              format: date-time
+              description: The end date of the subscription.
+            auto_renewal:
+              type: integer
+              description: Flag indicating auto-renewal status.
+            deleted_at:
+              type: string
+              format: date-time
+              description: The datetime when the transaction was deleted.
+            subscription:
+              type: object
+              description: The details of the subscription associated with the transaction.
+              properties:
+                id:
+                  type: integer
+                  description: The subscription ID.
+                name:
+                  type: string
+                  description: The name of the subscription.
+                duration:
+                  type: integer
+                  description: The duration of the subscription.
+                unit:
+                  type: string
+                  description: The unit of duration (e.g., days, months).
+                price:
+                  type: integer
+                  description: The price of the subscription.
+                benefits:
+                  type: string
+                  description: The benefits or features of the subscription.
+                image:
+                  type: string
+                  description: The URL of the subscription image.
+                deleted_at:
+                  type: string
+                  format: date-time
+                  description: The datetime when the subscription was deleted.
+                created_at:
+                  type: string
+                  format: date-time
+                  description: The datetime when the subscription was created.
+                updated_at:
+                  type: string
+                  format: date-time
+                  description: The datetime when the subscription was last updated.
+                  
+    SubscriptionCreationRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: 30 days active
+        duration:
+          type: integer
+          example: 30
+        unit:
+          type: string
+          example: months
+        price:
+          type: integer
+          example: 100
+        benefits:
+          type: string
+          example: List of benefits or features
+        image:
+          type: string
+          example: NUll
+      required:
+        - name
+        - duration
+        - unit
+        - price
+        
+    SubscriptionCreationResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/Subscription'
+        message:
+          type: string
+        code:
+          type: integer
+      required:
+        - success
+        - data
+        - message
+        - code
+        
+    Subscription:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The ID of the subscription.
+        name:
+          type: string
+          description: The name of the subscription.
+        duration:
+          type: integer
+          description: The duration of the subscription.
+        unit:
+          type: string
+          description: The unit of the duration (e.g., hours, days, months).
+        price:
+          type: integer
+          description: The price of the subscription.
+        benefits:
+          type: string
+          description: List of benefits or features of the subscription.
+        image:
+          type: string
+          description: The URL of the subscription image.
+        created_at:
+          type: string
+          format: date-time
+          description: The datetime when the subscription was created.
+        updated_at:
+          type: string
+          format: date-time
+          description: The datetime when the subscription was last updated.
+          
+          
+          
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      
+             
+
+      
+      
+      
